@@ -1,0 +1,527 @@
+@charset "utf-8";
+
+/* 应用的全局CSS */
+html {
+    height: 100%;
+    background: #f1f2f3;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    min-width: 320px !important;
+}
+
+body, button, input, select, p, ul, li {
+    padding: 0;
+    margin: 0;
+    border: none;
+    outline: none;
+}
+
+body {
+    color: #000;
+    font-size: 15px;
+    font-family: "Microsoft Yahei", "微软雅黑", "Hiragino Sans GB", "WenQuanYi Micro Hei", "宋体", "sans-serif";
+}
+
+a:link, a:hover, a:active, a:visited {
+    text-decoration: none;
+}
+
+.container {
+    width: 1200px;
+    margin: 0 auto;
+}
+
+/* 页头部分CSS */
+.header {
+    width: 100%;
+    height: 64px;
+    margin-bottom: 40px;
+}
+
+.header-fixed {
+    position: fixed;
+    top: 0;
+    z-index: 999;
+    width: 100%;
+    height: 64px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.12);
+}
+
+.header .container {
+    height: 64px;
+}
+
+/*.logo {*/
+    /*display: block;*/
+    /*float: left;*/
+    /*font-size: 38px;*/
+    /*font-weight: 700;*/
+    /*color: #094087;*/
+    /*margin-top: 6px;*/
+/*}*/
+
+.logo {
+    width: 120px;
+    height: 50px;
+    margin-top: 8px;
+    margin-left: -3px;
+}
+
+.account {
+    float: right;
+    height: 64px;
+    line-height: 64px;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.icon-off {
+    top: 3px;
+    color: #000;
+    margin-left: 4px;
+}
+
+/* 页脚部分CSS */
+.footer {
+    width: 100%;
+    height: 64px;
+    line-height: 64px;
+    background-color: #e1e2e3;
+    text-align: center;
+    font-size: 16px;
+    border-top: 1px solid #ccc;
+}
+
+/* 页面主体部分CSS */
+main.container {
+    min-height: 800px;
+}
+
+.panel {
+    width: 1200px;
+    min-height: 800px;
+    margin-bottom: 60px;
+    padding: 30px 40px 40px;
+    box-sizing: border-box;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 5px rgba(0, 0, 0, 0.08);
+}
+
+.pull-left {
+    float: left;
+    margin-right: 14px;
+}
+
+.pull-right {
+    float: right;
+    margin-left: 14px;
+}
+
+/* 按钮部分 */
+.btn {
+    width: 90px;
+    height: 34px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #337ab7;
+    border-radius: 3px;
+}
+
+.btn:hover {
+    background-color: #286090;
+}
+
+.btn:active {
+    background-color: #204d74;
+}
+
+.btn:disabled {
+    background-color: #7ba9d0;
+}
+
+.btn-list {
+    width: 100%;
+    height: 34px;
+    margin-bottom: 16px;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-link {
+    color: #337ab7;
+    font-size: 15px;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.btn-cancel {
+    width: 90px;
+    height: 34px;
+    color: #000;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #ffffff;
+    border-radius: 3px;
+    border: 1px solid #bbb;
+}
+
+.btn-cancel:hover {
+    background-color: #e6e6e6;
+}
+
+.btn-cancel:active {
+    background-color: #d4d4d4;
+}
+
+/* 表格部分 */
+.table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+}
+
+.table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+    padding: 8px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border-top: 1px solid #ddd;
+}
+
+.table > thead > tr > th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #ddd;
+    text-align: left;
+}
+
+.table > caption + thead > tr:first-child > td, .table > caption + thead > tr:first-child > th, .table > colgroup + thead > tr:first-child > td, .table > colgroup + thead > tr:first-child > th, .table > thead:first-child > tr:first-child > td, .table > thead:first-child > tr:first-child > th {
+    border-top: 0;
+}
+
+.table > tbody + tbody {
+    border-top: 2px solid #ddd;
+}
+
+.table-bordered {
+    border: 1px solid #ddd;
+}
+
+.table-bordered > tbody > tr > td, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > td, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > thead > tr > th {
+    border: 1px solid #ddd;
+}
+
+.table-bordered > thead > tr > td, .table-bordered > thead > tr > th {
+    border-bottom-width: 2px;
+}
+
+.table-hover > tbody > tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* 表单部分 */
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-text {
+    display: block;
+    height: 36px;
+    line-height: 36px;
+    font-size: 15px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    border: 1px solid #bbb;
+}
+
+.form-label {
+    display: block;
+    height: 36px;
+    line-height: 36px;
+    font-weight: 700;
+    margin-right: 12px;
+}
+
+.form-control {
+    width: 100%;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 12px;
+    font-size: 15px;
+    box-sizing: border-box;
+    border: 1px solid #bbb;
+}
+
+.form-control:focus {
+    border: 1px solid #337ab7;
+}
+
+input[type="file"].form-control {
+    line-height: normal;
+    font-size: 13px;
+    padding: 5px 12px;
+}
+
+select.form-control {
+    padding: 0 8px;
+}
+
+.form-horizontal {
+
+}
+
+.form-horizontal .form-group {
+    overflow: hidden;
+}
+
+.form-horizontal .form-icon {
+    position: relative;
+}
+
+.form-horizontal .form-icon .icon {
+    position: absolute;
+    top: 0;
+    right: 4px;
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    font-size: 18px;
+    color: #ccc;
+    cursor: pointer;
+}
+
+.form-horizontal .form-icon .icon:hover {
+    color: #b0b0b0;
+}
+
+.form-horizontal .form-icon .icon:active {
+    color: #a0a0a0;
+}
+
+.form-horizontal .form-icon .form-control {
+    padding-right: 36px;
+}
+
+.form-horizontal .form-text {
+    float: left;
+    width: 340px;
+}
+
+.form-horizontal .form-label {
+    float: left;
+    width: 32px;
+    text-align: right;
+    margin-left: 2px;
+}
+
+.form-horizontal .form-control {
+    float: left;
+    width: 340px;
+}
+
+.form-horizontal .modal-area {
+    width: 382px;
+    max-height: 212px;
+    border: 1px solid #bbb;
+    margin: 0 4px 12px;
+    padding: 6px 12px;
+    color: #888;
+    overflow: scroll;
+    font-size: 12px;
+    line-height: 20px;
+    box-sizing: border-box;
+}
+
+/* 模态框 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9000;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.modal-dialog {
+    width: 450px;
+    margin: 120px auto 0;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    position: relative;
+    text-align: center;
+    padding: 16px;
+    border-bottom: solid 1px #dedfe0;
+}
+
+.modal-title {
+    line-height: 1;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.modal-close {
+    display: block;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.modal-content {
+    padding: 30px;
+    overflow: hidden;
+}
+
+.modal-prompt {
+    font-size: 20px;
+}
+
+.modal-content .btn-cancel {
+    margin-right: 4px;
+}
+
+.line {
+    width: 382px;
+    height: 1px;
+    margin: 20px 4px;
+    background-color: #bbb;
+}
+
+.modal-tab {
+    width: 390px;
+    padding: 8px 30px;
+    height: 38px;
+}
+
+.modal-tab .tab {
+    display: inline-block;
+    list-style: none;
+    height: 38px;
+    line-height: 38px;
+    color: #888;
+    font-size: 16px;
+    font-weight: 700;
+    margin-right: 12px;
+    cursor: pointer;
+}
+
+.modal-tab .tab:hover {
+    color: #444;
+}
+
+.modal-tab .tab:active {
+    color: #000;
+}
+
+.modal-tab .active {
+    color: #000;
+    border-bottom: 3px solid #dedfe0;
+}
+
+.modal-tab .active:hover {
+    color: #000;
+}
+
+.modal-footer {
+    overflow: hidden;
+    text-align: right;
+    padding: 16px;
+    border-top: solid 1px #dedfe0;
+}
+
+.modal-footer .btn, .modal-footer .btn-cancel {
+    width: 64px;
+}
+
+/* Response部分 */
+.popover-space {
+    position: fixed;
+    z-index: 999999;
+    top: 0;
+    right: 16px;
+    width: 320px;
+    height: auto;
+}
+
+.popover {
+    width: 100%;
+    height: 54px;
+    line-height: 54px;
+    color: #fff;
+    font-size: 14px;
+    margin: 16px 0;
+    padding: 0 16px;
+    border-radius: 2px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 0 5px rgba(0, 0, 0, 0.12);
+}
+
+.popover .icon {
+    top: 2px;
+}
+
+.success {
+    color: #fff;
+    background-color: #67c23a;
+}
+
+.error {
+    color: #fff;
+    background-color: #f56c6c;
+}
+
+.prompt {
+    color: #fff;
+    background-color: #409eff;
+}
+
+/* icon部分 */
+@font-face {
+    font-family: 'Glyphicons Halflings';
+    src: url('../fonts/glyphicons-halflings-regular.eot');
+    src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+
+.icon {
+    position: relative;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings', serif;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-search:before {
+    content: "\e003";
+}
+
+.icon-ok:before {
+    content: "\e013";
+}
+
+.icon-remove:before {
+    content: "\e014";
+}
+
+.icon-off:before {
+    content: "\e017";
+}
+
+/* Vue相关CSS */
+[v-cloak] {
+    display: none !important;
+}

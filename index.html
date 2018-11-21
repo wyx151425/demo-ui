@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>研究生推免系统</title>
+    <link rel="shortcut icon" href="images/logo.jpg" type="image/x-icon"/>
+    <link rel="stylesheet" href="css/demo.css"/>
+</head>
+<body>
+<header class="header">
+    <div class="header-fixed">
+        <div class="container">
+            <!--<div class="logo">CNU</div>-->
+            <img class="logo" src="images/logo1.jpg" alt="">
+            <div class="account">
+                <span>管理员</span>
+                <a class="icon icon-off" href=""></a>
+            </div>
+        </div>
+    </div>
+</header>
+<main id="container" class="container">
+    <div class="panel">
+        <div class="btn-list">
+            <button class="btn pull-right" @click="scoreImportModalVisible">导入</button>
+        </div>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>学号</th>
+                    <th>姓名</th>
+                    <th>平均成绩</th>
+                    <th>笔试成绩</th>
+                    <th>面试成绩</th>
+                    <th>综合成绩</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="student in studentList">
+                    <td>{{student.code}}</td>
+                    <td>{{student.name}}</td>
+                    <td>{{student.averageScore}}</td>
+                    <td>{{student.examScore}}</td>
+                    <td>{{student.interviewScore}}</td>
+                    <td>{{student.comprehensiveScore}}</td>
+                    <td>
+                        <button class="btn-link">编辑</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<footer class="footer">
+    <span>&copy;2018 首都师范大学</span>
+</footer>
+<div id="scoreImportModal" class="modal" v-if="isVisible" v-cloak>
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <span class="modal-title">导入成绩</span>
+            <span class="modal-close"><span class="icon icon-remove" @click="invisible"></span></span>
+        </div>
+        <div class="modal-content form-horizontal">
+            <div class="form-group">
+                <label class="form-label">文件</label>
+                <input id="file" class="form-control" type="file"/>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel pull-right" @click="invisible" :disabled="isDisabled">取消</button>
+            <button class="btn pull-right" @click="importScoreFile" :disabled="isDisabled">{{action}}</button>
+        </div>
+    </div>
+</div>
+<div id="popoverSpace" class="popover-space" v-if="prompts.length > 0">
+    <popover v-for="prompt in prompts" v-bind:key="prompt.id" v-bind:prompt="prompt"></popover>
+</div>
+<div id="mask" class="mask" v-if="loading">
+    <p class="mask-prompt">数据获取中...</p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="js/demo.js"></script>
+<script>
+    const container = new Vue({
+        el: "#container",
+        data: {
+            studentList: []
+        },
+        methods: {
+            setStudentList: function (studentList) {
+                this.studentList = studentList;
+            },
+            scoreImportModalVisible: function () {
+                scoreImportModal.visible();
+            }
+        },
+        mounted: function () {
+            axios.get(requestContext + "api/students")
+                .then(function (response) {
+                    let statusCode = response.data.statusCode;
+                    if (200 === statusCode) {
+                        container.setStudentList(response.data.data);
+                    } else {
+                        popoverSpace.append("数据获取失败", false);
+                    }
+                    mask.loadSuccess();
+                })
+                .catch(function () {
+                    popoverSpace.append("服务器访问失败", false);
+                    mask.loadSuccess();
+                });
+        }
+    });
+
+    const scoreImportModal = new Vue({
+        el: "#scoreImportModal",
+        data: {
+            isVisible: false,
+            isDisabled: false,
+            action: "导入",
+        },
+        methods: {
+            visible: function () {
+                this.isVisible = true;
+            },
+            invisible: function () {
+                this.isVisible = false;
+            },
+            importScoreFile: function () {
+                let file = document.getElementById("file").files[0];
+                if (!file) {
+                    popoverSpace.append("请选择文件", false);
+                    return;
+                }
+                this.isDisabled = true;
+                this.action = "正在导入";
+                let param = new FormData();  // 创建Form对象
+                // 通过append向Form对象添加数据
+                param.append("file", file, file.name);
+                let config = {
+                    headers: {"Content-Type": "multipart/form-data"}
+                };  // 添加请求头
+                axios.post(requestContext + "api/students/import", param, config)
+                    .then(function (response) {
+                        let statusCode = response.data.statusCode;
+                        if (200 === statusCode) {
+                            popoverSpace.append("导入成功", true);
+                        } else {
+                            popoverSpace.append("导入失败", false);
+                        }
+                        scoreImportModal.importCallback();
+                    })
+                    .catch(function () {
+                        popoverSpace.append("服务器访问失败", false);
+                        scoreImportModal.importCallback();
+                    });
+            },
+            importCallback: function () {
+                this.action = "导入";
+                this.isDisabled = false;
+            }
+        }
+    });
+</script>
+</body>
+</html>
