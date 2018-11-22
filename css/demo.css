@@ -105,7 +105,7 @@ main.container {
     width: 1200px;
     min-height: 800px;
     margin-bottom: 60px;
-    padding: 30px 40px 40px;
+    padding: 40px;
     box-sizing: border-box;
     background-color: #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 5px rgba(0, 0, 0, 0.08);
@@ -338,6 +338,87 @@ select.form-control {
     box-sizing: border-box;
 }
 
+.form-horizon3 {
+
+}
+
+.form-horizon3 .form-text {
+    width: 324px;
+}
+
+.form-horizon3 .form-label {
+    width: 48px;
+}
+
+.form-horizon3 .form-control {
+    float: left;
+    width: 324px;
+}
+
+.form-horizon4 {
+
+}
+
+.form-horizon4 .form-text {
+    width: 308px;
+}
+
+.form-horizon4 .form-label {
+    width: 64px;
+}
+
+.form-horizon4 .form-control {
+    float: left;
+    width: 308px;
+}
+
+.form-score {
+    margin-top: 40px;
+}
+
+.form-score .form-group {
+    float: left;
+    overflow: hidden;
+    width: 480px;
+    height: 28px;
+}
+
+/*.form-score .form-text {*/
+    /*float: right;*/
+    /*width: 140px;*/
+    /*height: 28px;*/
+    /*line-height: 28px;*/
+    /*padding-left: 8px;*/
+    /*border: none;*/
+    /*border-bottom: 1px solid #bbb;*/
+    /*margin-right: 60px;*/
+/*}*/
+
+.form-score .form-label {
+    float: left;
+    position: absolute;
+    width: 140px;
+    height: 28px;
+    line-height: 28px;
+    text-align: right;
+    margin-left: 140px;
+}
+
+.form-score .form-control {
+    float: right;
+    width: 140px;
+    height: 28px;
+    line-height: 28px;
+    padding-left: 8px;
+    border: none;
+    border-bottom: 1px solid #bbb;
+    margin-right: 50px;
+}
+
+.form-score .form-control:focus {
+    border-bottom: 1px solid #337ab7;
+}
+
 /* 模态框 */
 .modal {
     position: fixed;
@@ -384,7 +465,9 @@ select.form-control {
 }
 
 .modal-prompt {
-    font-size: 20px;
+    font-size: 15px;
+    height: 22px;
+    line-height: 22px;
 }
 
 .modal-content .btn-cancel {
@@ -442,6 +525,24 @@ select.form-control {
 
 .modal-footer .btn, .modal-footer .btn-cancel {
     width: 64px;
+}
+
+/* 加载模糊 */
+.mask {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.mask-prompt {
+    margin: auto;
+    font-size: 20px;
+    font-weight: 700;
 }
 
 /* Response部分 */

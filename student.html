@@ -2,14 +2,15 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <link rel="shortcut icon" href="images/logo.jpg" type="image/x-icon"/>
     <title>研究生推免系统</title>
+    <link rel="shortcut icon" href="images/logo.jpg" type="image/x-icon"/>
+    <link rel="stylesheet" href="css/demo.css"/>
 </head>
 <body>
 <header class="header">
     <div class="header-fixed">
         <div class="container">
-            <div class="logo">CNU</div>
+            <img class="logo" src="images/logo1.jpg" alt="">
             <div class="account">
                 <span>管理员</span>
                 <a class="icon icon-off" href=""></a>
@@ -17,5 +18,94 @@
         </div>
     </div>
 </header>
+<main id="container" class="container">
+    <div class="panel">
+        <div class="form-score">
+            <div class="form-group">
+                <label class="form-label">学号*</label>
+                <p class="form-control">{{student.code}}</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">姓名*</label>
+                <p class="form-control">{{student.name}}</p>
+            </div>
+            <div class="form-group" v-for="(course, index) in student.courseList">
+                <label class="form-label">{{course.name}}</label>
+                <input class="form-control" type="text" :value="course.score" v-model="course.score" placeholder="请输入"/>
+            </div>
+        </div>
+        <button class="btn pull-right" @click="saveCourseList" :disabled="isDisabled" style="margin-right: 210px; margin-top: 60px">{{action}}</button>
+    </div>
+</main>
+<div id="popoverSpace" class="popover-space" v-if="prompts.length > 0">
+    <popover v-for="prompt in prompts" v-bind:key="prompt.id" v-bind:prompt="prompt"></popover>
+</div>
+<div id="mask" class="mask" v-if="loading">
+    <p class="mask-prompt">数据获取中...</p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="js/demo.js"></script>
+<script>
+    const container = new Vue({
+        el: "#container",
+        data: {
+            isDisabled: false,
+            action: "保存",
+            student: {}
+        },
+        methods: {
+            setStudent: function (student) {
+                this.student = student;
+            },
+            saveCourseList: function () {
+                for (let index = 0; index < this.student.courseList.length; index++) {
+                    if ("" === this.student.courseList[index].score) {
+                        popoverSpace.append("请填写成绩", false);
+                        return;
+                    }
+                }
+                this.isDisabled = true;
+                this.action = "正在保存";
+                axios.put(requestContext + "api/courses", this.student.courseList)
+                    .then(function (response) {
+                        let statusCode = response.data.statusCode;
+                        if (200 === statusCode) {
+                            popoverSpace.append("保存成功", true);
+                        } else {
+                            popoverSpace.append("保存失败", false);
+                        }
+                        container.saveCallback();
+                    })
+                    .catch(function () {
+                        popoverSpace.append("服务器访问失败", false);
+                        container.saveCallback();
+                    });
+            },
+            saveCallback: function () {
+                this.action = "保存";
+                this.isDisabled = false;
+            }
+        },
+        mounted: function () {
+            let url = window.location;
+            let id = getUrlParam(url, "student");
+            axios.get(requestContext + "api/students/" + id)
+                .then(function (response) {
+                    let statusCode = response.data.statusCode;
+                    if (200 === statusCode) {
+                        container.setStudent(response.data.data);
+                    } else {
+                        popoverSpace.append("数据获取失败", false);
+                    }
+                    mask.loadSuccess();
+                })
+                .catch(function () {
+                    popoverSpace.append("服务器访问失败", false);
+                    mask.loadSuccess();
+                });
+        }
+    });
+</script>
 </body>
 </html>

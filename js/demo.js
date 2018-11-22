@@ -1,5 +1,32 @@
 let requestContext = "http://localhost:8090/demo/";
 
+function getUrlParam(url, name) {
+    let pattern = new RegExp("[?&]" + name + "\=([^&]+)", "g");
+    let matcher = pattern.exec(url);
+    let items = null;
+    if (null !== matcher) {
+        try {
+            items = decodeURIComponent(decodeURIComponent(matcher[1]));
+        } catch (e) {
+            try {
+                items = decodeURIComponent(matcher[1]);
+            } catch (e) {
+                items = matcher[1];
+            }
+        }
+    }
+    return items;
+}
+
+function getMessage(statusCode) {
+    switch (statusCode) {
+        case 500:
+            return "系统错误";
+        case 3000:
+            return "推免计划已存在";
+    }
+}
+
 Vue.component("popover", {
     props: ["prompt"],
     template: `
