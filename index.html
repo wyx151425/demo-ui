@@ -28,7 +28,7 @@
                 <tr>
                     <th>年份</th>
                     <th>计划人数</th>
-                    <th>计划状态</th>
+                    <th>进行情况</th>
                     <th>资格审查</th>
                     <th>笔试</th>
                     <th>面试</th>
@@ -164,6 +164,7 @@
                         let statusCode = response.data.statusCode;
                         if (200 === statusCode) {
                             popoverSpace.append("发布成功", true);
+                            window.location.reload();
                         } else {
                             let message = getMessage(statusCode);
                             popoverSpace.append(message, false);

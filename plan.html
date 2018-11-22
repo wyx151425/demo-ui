@@ -21,8 +21,8 @@
 <main id="container" class="container">
     <div class="panel">
         <div class="btn-list">
+            <button class="btn pull-right" @click="inspectionSubmitModalVisible">提交审核</button>
             <button class="btn pull-right" @click="scoreImportModalVisible">导入</button>
-            <button class="btn pull-right" @click="scoreCalculateModalVisible">计算成绩</button>
         </div>
         <table class="table table-bordered table-hover">
             <thead>
@@ -30,7 +30,7 @@
                 <th>学号</th>
                 <th>姓名</th>
                 <th>平均成绩</th>
-                <th>链接</th>
+                <th>查看</th>
             </tr>
             </thead>
             <tbody>
@@ -39,7 +39,7 @@
                 <td>{{student.name}}</td>
                 <td>{{student.averageScore}}</td>
                 <td>
-                    <a class="btn-link" :href="'student.html?student=' + student.id">基础成绩</a>
+                    <a class="btn-link" :href="'student.html?student=' + student.id">成绩</a>
                 </td>
             </tr>
             </tbody>
@@ -67,20 +67,20 @@
         </div>
     </div>
 </div>
-<div id="scoreCalculateModal" class="modal" v-if="isVisible" v-cloak>
+<div id="inspectionSubmitModal" class="modal" v-if="isVisible" v-cloak>
     <div class="modal-dialog">
         <div class="modal-header">
-            <span class="modal-title">计算平均成绩</span>
+            <span class="modal-title">提交审核任务</span>
             <span class="modal-close"><span class="icon icon-remove" @click="invisible"></span></span>
         </div>
         <div class="modal-content">
-            <p class="modal-prompt">您确定要计算所有学生的平均成绩吗？</p>
-            <p class="modal-prompt">计算完成后您将无法导入学生与成绩数据，</p>
-            <p class="modal-prompt">并且此推免计划将进入初试阶段！</p>
+            <p class="modal-prompt">您确定提交审核任务吗？</p>
+            <p class="modal-prompt">提交后您将无法再导入学生与成绩数据，</p>
+            <p class="modal-prompt">并且此推免计划将进入笔试阶段！</p>
         </div>
         <div class="modal-footer">
             <button class="btn-cancel pull-right" @click="invisible" :disabled="isDisabled">取消</button>
-            <button class="btn pull-right" @click="calculateScore" :disabled="isDisabled">{{action}}</button>
+            <button class="btn pull-right" @click=" submitInspection" :disabled="isDisabled">{{action}}</button>
         </div>
     </div>
 </div>
@@ -98,17 +98,27 @@
         el: "#container",
         data: {
             year: "",
+            plan: {},
             studentList: []
         },
         methods: {
+            setPlan: function (plan) {
+                this.plan = plan;
+            },
+            getPlan: function () {
+                return this.plan;
+            },
+            getYear: function () {
+                return this.year;
+            },
             setStudentList: function (studentList) {
                 this.studentList = studentList;
             },
             scoreImportModalVisible: function () {
                 scoreImportModal.visible();
             },
-            scoreCalculateModalVisible: function () {
-                scoreCalculateModal.visible();
+            inspectionSubmitModalVisible: function () {
+                inspectionSubmitModal.visible();
             }
         },
         mounted: function () {
@@ -118,7 +128,8 @@
                 .then(function (response) {
                     let statusCode = response.data.statusCode;
                     if (200 === statusCode) {
-                        container.setStudentList(response.data.data);
+                        container.setPlan(response.data.data.plan);
+                        container.setStudentList(response.data.data.studentList);
                     } else {
                         popoverSpace.append("数据获取失败", false);
                     }
@@ -155,6 +166,7 @@
                 this.action = "正在导入";
                 let param = new FormData();  // 创建Form对象
                 // 通过append向Form对象添加数据
+                param.append("year", container.getYear());
                 param.append("file", file, file.name);
                 let config = {
                     headers: {"Content-Type": "multipart/form-data"}
@@ -164,6 +176,7 @@
                         let statusCode = response.data.statusCode;
                         if (200 === statusCode) {
                             popoverSpace.append("导入成功", true);
+                            window.location.reload();
                         } else {
                             popoverSpace.append("导入失败", false);
                         }
@@ -181,12 +194,12 @@
         }
     });
 
-    const scoreCalculateModal = new Vue({
-        el: "#scoreCalculateModal",
+    const inspectionSubmitModal = new Vue({
+        el: "#inspectionSubmitModal",
         data: {
             isVisible: false,
             isDisabled: false,
-            action: "计算",
+            action: "提交",
         },
         methods: {
             visible: function () {
@@ -195,24 +208,29 @@
             invisible: function () {
                 this.isVisible = false;
             },
-            calculateScore: function () {
-                axios.put(requestContext + "api/plans/inspect", {year: this.year})
-                    .then(function (response) {
-                        let statusCode = response.data.statusCode;
-                        if (200 === statusCode) {
-                            popoverSpace.append("计算完成", true);
-                        } else {
-                            popoverSpace.append("计算失败", false);
-                        }
-                        scoreCalculateModal.calculateCallback();
-                    })
-                    .catch(function () {
-                        popoverSpace.append("服务器访问失败", false);
-                        scoreCalculateModal.calculateCallback();
-                    });
+            submitInspection: function () {
+                this.isDisabled = true;
+                this.action = "正在提交";
+                axios.put(requestContext + "api/plans", {
+                    id: container.getPlan().id,
+                    year: container.getPlan().year,
+                    inspection: 2,
+                    exam: 1
+                }).then(function (response) {
+                    let statusCode = response.data.statusCode;
+                    if (200 === statusCode) {
+                        popoverSpace.append("提交成功", true);
+                    } else {
+                        popoverSpace.append("提交失败", false);
+                    }
+                    inspectionSubmitModal.submitCallback();
+                }).catch(function () {
+                    popoverSpace.append("服务器访问失败", false);
+                    inspectionSubmitModal.submitCallback();
+                });
             },
-            calculateCallback: function () {
-                this.action = "计算";
+            submitCallback: function () {
+                this.action = "提交";
                 this.isDisabled = false;
             }
         }

@@ -383,17 +383,6 @@ select.form-control {
     height: 28px;
 }
 
-/*.form-score .form-text {*/
-    /*float: right;*/
-    /*width: 140px;*/
-    /*height: 28px;*/
-    /*line-height: 28px;*/
-    /*padding-left: 8px;*/
-    /*border: none;*/
-    /*border-bottom: 1px solid #bbb;*/
-    /*margin-right: 60px;*/
-/*}*/
-
 .form-score .form-label {
     float: left;
     position: absolute;
@@ -417,6 +406,32 @@ select.form-control {
 
 .form-score .form-control:focus {
     border-bottom: 1px solid #337ab7;
+}
+
+.option-list {
+    width: 820px;
+    margin: 20px 0 50px 80px;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.option {
+    display: inline-block;
+    color: #888;
+    height: 50px;
+    line-height: 50px;
+    margin-right: 32px;
+    cursor: pointer;
+    outline: none;
+}
+
+.option:hover {
+    color: #444;
+}
+
+.option-list .active {
+    color: #000;
+    border-bottom: solid 3px #dedfe0;
 }
 
 /* 模态框 */
