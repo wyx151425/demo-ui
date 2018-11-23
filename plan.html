@@ -10,10 +10,10 @@
 <header class="header">
     <div class="header-fixed">
         <div class="container">
-            <img class="logo" src="images/logo1.jpg" alt="">
+            <p class="logo">首都师范大学</p>
             <div class="account">
-                <span>管理员</span>
-                <a class="icon icon-off" href=""></a>
+                <span>{{user.name}}</span>
+                <span class="icon icon-off" @click="logout"></span>
             </div>
         </div>
     </div>
@@ -21,25 +21,54 @@
 <main id="container" class="container">
     <div class="panel">
         <div class="btn-list">
-            <button class="btn pull-right" @click="inspectionSubmitModalVisible">提交审核</button>
-            <button class="btn pull-right" @click="scoreImportModalVisible">导入</button>
+            <div class="select-group">
+                <label class="select-label">状态</label>
+                <select class="form-select" v-model="status" @change="queryStudentList">
+                    <option value="0">全部</option>
+                    <option value="1" v-if="plan.status >= 3">可面试</option>
+                    <option value="2" v-if="plan.status >= 4">可推免</option>
+                </select>
+            </div>
+            <button class="btn pull-right" @click="inspectionSubmitModalVisible" v-if="1 == plan.status" v-cloak>提交
+            </button>
+            <button class="btn pull-right" @click="examSubmitModalVisible" v-if="2 == plan.status" v-cloak>提交</button>
+            <button class="btn pull-right" @click="interviewSubmitModalVisible" v-if="3 == plan.status" v-cloak>提交
+            </button>
+            <button class="btn pull-right" @click="planCompleteModalVisible" v-if="4 == plan.status" v-cloak>完成</button>
+            <button class="btn pull-right" @click="scoreImportModalVisible" v-if="1 == plan.status" v-cloak>导入</button>
+            <button class="button" type="button">返回</button>
         </div>
         <table class="table table-bordered table-hover">
             <thead>
             <tr>
                 <th>学号</th>
                 <th>姓名</th>
-                <th>平均成绩</th>
-                <th>查看</th>
+                <th>基础成绩</th>
+                <th v-if="plan.status >= 3" v-cloak>专业课成绩</th>
+                <th v-if="plan.status >= 3" v-cloak>英语成绩</th>
+                <th v-if="plan.status >= 3" v-cloak>附加分数</th>
+                <th v-if="plan.status >= 4" v-cloak>面试成绩</th>
+                <th v-if="plan.status >= 4" v-cloak>总成绩</th>
+                <th v-if="plan.status >= 4" v-cloak>总排名</th>
+                <th>操作</th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="student in studentList">
+            <tr v-for="(student, index) in studentList">
                 <td>{{student.code}}</td>
                 <td>{{student.name}}</td>
                 <td>{{student.averageScore}}</td>
+                <td v-if="plan.status >= 3" v-cloak>{{student.proCourseScore}}</td>
+                <td v-if="plan.status >= 3" v-cloak>{{student.englishScore}}</td>
+                <td v-if="plan.status >= 3" v-cloak>{{student.additionalScore}}</td>
+                <td v-if="plan.status >= 4" v-cloak>{{student.interviewScore}}</td>
+                <td v-if="plan.status >= 4" v-cloak>{{student.comprehensiveScore}}</td>
+                <td v-if="plan.status >= 4" v-cloak>{{student.comprehensiveRank}}</td>
                 <td>
-                    <a class="btn-link" :href="'student.html?student=' + student.id">成绩</a>
+                    <a class="btn-link" :href="'student.html?student=' + student.id" style="margin-right: 16px">查看成绩</a>
+                    <button class="btn-link" type="button" @click="studentDeleteModalVisible(student, index)" v-if="1 == plan.status" v-cloak>
+                        取消资格
+                    </button>
                 </td>
             </tr>
             </tbody>
@@ -70,17 +99,81 @@
 <div id="inspectionSubmitModal" class="modal" v-if="isVisible" v-cloak>
     <div class="modal-dialog">
         <div class="modal-header">
-            <span class="modal-title">提交审核任务</span>
+            <span class="modal-title">提交审核阶段</span>
             <span class="modal-close"><span class="icon icon-remove" @click="invisible"></span></span>
         </div>
         <div class="modal-content">
-            <p class="modal-prompt">您确定提交审核任务吗？</p>
+            <p class="modal-prompt">您确定要提交审核阶段吗？</p>
             <p class="modal-prompt">提交后您将无法再导入学生与成绩数据，</p>
-            <p class="modal-prompt">并且此推免计划将进入笔试阶段！</p>
+            <p class="modal-prompt">并且该推免计划将进入笔试阶段！</p>
         </div>
         <div class="modal-footer">
             <button class="btn-cancel pull-right" @click="invisible" :disabled="isDisabled">取消</button>
-            <button class="btn pull-right" @click=" submitInspection" :disabled="isDisabled">{{action}}</button>
+            <button class="btn pull-right" @click="submitInspection" :disabled="isDisabled">{{action}}</button>
+        </div>
+    </div>
+</div>
+<div id="examSubmitModal" class="modal" v-if="isVisible" v-cloak>
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <span class="modal-title">提交初试阶段</span>
+            <span class="modal-close"><span class="icon icon-remove" @click="invisible"></span></span>
+        </div>
+        <div class="modal-content">
+            <p class="modal-prompt">您确定要提交初试阶段吗？</p>
+            <p class="modal-prompt">提交前请确认已经为所有学生录入初试成绩，</p>
+            <p class="modal-prompt">提交后该推免计划将进入面试阶段！</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel pull-right" @click="invisible" :disabled="isDisabled">取消</button>
+            <button class="btn pull-right" @click="submitExam" :disabled="isDisabled">{{action}}</button>
+        </div>
+    </div>
+</div>
+<div id="interviewSubmitModal" class="modal" v-if="isVisible" v-cloak>
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <span class="modal-title">提交面试阶段</span>
+            <span class="modal-close"><span class="icon icon-remove" @click="invisible"></span></span>
+        </div>
+        <div class="modal-content">
+            <p class="modal-prompt">您确定要提交面试阶段吗？</p>
+            <p class="modal-prompt">提交前请确认已经为所有学生录入面试成绩，</p>
+            <p class="modal-prompt">提交后该推免计划将进入录取阶段！</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel pull-right" @click="invisible" :disabled="isDisabled">取消</button>
+            <button class="btn pull-right" @click="submitInterview" :disabled="isDisabled">{{action}}</button>
+        </div>
+    </div>
+</div>
+<div id="planCompleteModal" class="modal" v-if="isVisible" v-cloak>
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <span class="modal-title">完成录取工作</span>
+            <span class="modal-close"><span class="icon icon-remove" @click="invisible"></span></span>
+        </div>
+        <div class="modal-content">
+            <p class="modal-prompt">您确定要完成录取工作吗？</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel pull-right" @click="invisible" :disabled="isDisabled">取消</button>
+            <button class="btn pull-right" @click="completePlan" :disabled="isDisabled">{{action}}</button>
+        </div>
+    </div>
+</div>
+<div id="studentDeleteModal" class="modal" v-if="isVisible" v-cloak>
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <span class="modal-title">取消推免资格</span>
+            <span class="modal-close"><span class="icon icon-remove" @click="invisible"></span></span>
+        </div>
+        <div class="modal-content">
+            <p class="modal-prompt">您确定要取消{{student.name}}的推免资格吗？</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel pull-right" @click="invisible" :disabled="isDisabled">取消</button>
+            <button class="btn pull-right" @click="deleteStudent" :disabled="isDisabled">{{action}}</button>
         </div>
     </div>
 </div>
@@ -90,151 +183,9 @@
 <div id="mask" class="mask" v-if="loading">
     <p class="mask-prompt">数据获取中...</p>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="js/vue.min.js"></script>
+<script src="js/axios.min.js"></script>
 <script src="js/demo.js"></script>
-<script>
-    const container = new Vue({
-        el: "#container",
-        data: {
-            year: "",
-            plan: {},
-            studentList: []
-        },
-        methods: {
-            setPlan: function (plan) {
-                this.plan = plan;
-            },
-            getPlan: function () {
-                return this.plan;
-            },
-            getYear: function () {
-                return this.year;
-            },
-            setStudentList: function (studentList) {
-                this.studentList = studentList;
-            },
-            scoreImportModalVisible: function () {
-                scoreImportModal.visible();
-            },
-            inspectionSubmitModalVisible: function () {
-                inspectionSubmitModal.visible();
-            }
-        },
-        mounted: function () {
-            let url = window.location;
-            this.year = getUrlParam(url, "year");
-            axios.get(requestContext + "api/students?year=" + this.year)
-                .then(function (response) {
-                    let statusCode = response.data.statusCode;
-                    if (200 === statusCode) {
-                        container.setPlan(response.data.data.plan);
-                        container.setStudentList(response.data.data.studentList);
-                    } else {
-                        popoverSpace.append("数据获取失败", false);
-                    }
-                    mask.loadSuccess();
-                })
-                .catch(function () {
-                    popoverSpace.append("服务器访问失败", false);
-                    mask.loadSuccess();
-                });
-        }
-    });
-
-    const scoreImportModal = new Vue({
-        el: "#scoreImportModal",
-        data: {
-            isVisible: false,
-            isDisabled: false,
-            action: "导入",
-        },
-        methods: {
-            visible: function () {
-                this.isVisible = true;
-            },
-            invisible: function () {
-                this.isVisible = false;
-            },
-            importScoreFile: function () {
-                let file = document.getElementById("file").files[0];
-                if (!file) {
-                    popoverSpace.append("请选择文件", false);
-                    return;
-                }
-                this.isDisabled = true;
-                this.action = "正在导入";
-                let param = new FormData();  // 创建Form对象
-                // 通过append向Form对象添加数据
-                param.append("year", container.getYear());
-                param.append("file", file, file.name);
-                let config = {
-                    headers: {"Content-Type": "multipart/form-data"}
-                };  // 添加请求头
-                axios.post(requestContext + "api/students/import", param, config)
-                    .then(function (response) {
-                        let statusCode = response.data.statusCode;
-                        if (200 === statusCode) {
-                            popoverSpace.append("导入成功", true);
-                            window.location.reload();
-                        } else {
-                            popoverSpace.append("导入失败", false);
-                        }
-                        scoreImportModal.importCallback();
-                    })
-                    .catch(function () {
-                        popoverSpace.append("服务器访问失败", false);
-                        scoreImportModal.importCallback();
-                    });
-            },
-            importCallback: function () {
-                this.action = "导入";
-                this.isDisabled = false;
-            }
-        }
-    });
-
-    const inspectionSubmitModal = new Vue({
-        el: "#inspectionSubmitModal",
-        data: {
-            isVisible: false,
-            isDisabled: false,
-            action: "提交",
-        },
-        methods: {
-            visible: function () {
-                this.isVisible = true;
-            },
-            invisible: function () {
-                this.isVisible = false;
-            },
-            submitInspection: function () {
-                this.isDisabled = true;
-                this.action = "正在提交";
-                axios.put(requestContext + "api/plans", {
-                    id: container.getPlan().id,
-                    year: container.getPlan().year,
-                    inspection: 2,
-                    exam: 1
-                }).then(function (response) {
-                    let statusCode = response.data.statusCode;
-                    if (200 === statusCode) {
-                        popoverSpace.append("提交成功", true);
-                    } else {
-                        popoverSpace.append("提交失败", false);
-                    }
-                    inspectionSubmitModal.submitCallback();
-                }).catch(function () {
-                    popoverSpace.append("服务器访问失败", false);
-                    inspectionSubmitModal.submitCallback();
-                });
-            },
-            submitCallback: function () {
-                this.action = "提交";
-                this.isDisabled = false;
-            }
-        }
-    });
-</script>
+<script src="js/plan.js"></script>
 </body>
 </html>

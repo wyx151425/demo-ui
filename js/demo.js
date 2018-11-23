@@ -24,8 +24,53 @@ function getMessage(statusCode) {
             return "系统错误";
         case 3000:
             return "推免计划已存在";
+        case 4000:
+            return "初试成绩未全部录入";
+        case 4001:
+            return "面试成绩未全部录入";
+        case 4002:
+            return "学生人数少于拟推免人数";
     }
 }
+
+const header = new Vue({
+    el: "#header",
+    data: {
+        user: {}
+    },
+    methods: {
+        logout: function () {
+            axios.post(requestContext + "api/users/logout")
+                .then(function (response) {
+                    let statusCode = response.data.statusCode;
+                    if (200 === statusCode || 1004 === statusCode) {
+                        localStorage.removeItem("user");
+                        window.location.reload();
+                    } else {
+                        window.location.reload();
+                    }
+                })
+                .catch(function () {
+                    popoverSpace.append("服务器访问失败", false);
+                });
+        }
+    },
+    mounted: function () {
+        this.user = JSON.parse(localStorage.getItem("user"));
+    }
+});
+
+const mask = new Vue({
+    el: "#mask",
+    data: {
+        loading: true
+    },
+    methods: {
+        loadSuccess: function () {
+            this.loading = false;
+        }
+    }
+});
 
 Vue.component("popover", {
     props: ["prompt"],
@@ -52,18 +97,6 @@ const popoverSpace = new Vue({
             setTimeout(function () {
                 popoverSpace.prompts.shift(prompt);
             }, 5000);
-        }
-    }
-});
-
-const mask = new Vue({
-    el: "#mask",
-    data: {
-        loading: true
-    },
-    methods: {
-        loadSuccess: function () {
-            this.loading = false;
         }
     }
 });

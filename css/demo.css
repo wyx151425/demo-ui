@@ -56,19 +56,20 @@ a:link, a:hover, a:active, a:visited {
 }
 
 /*.logo {*/
-    /*display: block;*/
-    /*float: left;*/
-    /*font-size: 38px;*/
-    /*font-weight: 700;*/
-    /*color: #094087;*/
-    /*margin-top: 6px;*/
+    /*width: 120px;*/
+    /*height: 50px;*/
+    /*margin-top: 8px;*/
+    /*margin-left: -3px;*/
 /*}*/
 
 .logo {
-    width: 120px;
-    height: 50px;
-    margin-top: 8px;
-    margin-left: -3px;
+    float: left;
+    width: 144px;
+    height: 64px;
+    line-height: 64px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #286090;
 }
 
 .account {
@@ -83,6 +84,7 @@ a:link, a:hover, a:active, a:visited {
     top: 3px;
     color: #000;
     margin-left: 4px;
+    cursor: pointer;
 }
 
 /* 页脚部分CSS */
@@ -408,9 +410,32 @@ select.form-control {
     border-bottom: 1px solid #337ab7;
 }
 
+.select-group {
+    float: left;
+}
+
+.select-label {
+    height: 34px;
+    line-height: 34px;
+    font-size: 15px;
+    font-weight: 700;
+    margin-left: 2px;
+    margin-right: 6px;
+}
+
+.form-select {
+    width: 100px;
+    height: 34px;
+    color: #000;
+    font-size: 14px;
+    padding-left: 4px;
+    box-sizing: border-box;
+    border: 1px solid #bbb;
+}
+
 .option-list {
-    width: 820px;
-    margin: 20px 0 50px 80px;
+    width: 960px;
+    margin: 20px 80px 50px;
     font-size: 17px;
     font-weight: bold;
 }
@@ -432,6 +457,16 @@ select.form-control {
 .option-list .active {
     color: #000;
     border-bottom: solid 3px #dedfe0;
+}
+
+.option-list .btn-return {
+    float: right;
+    background-color: transparent;
+    color: #337ab7;
+    font-size: 17px;
+    height: 53px;
+    font-weight: 700;
+    cursor: pointer;
 }
 
 /* 模态框 */

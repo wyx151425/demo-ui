@@ -10,10 +10,10 @@
 <header class="header">
     <div class="header-fixed">
         <div class="container">
-            <img class="logo" src="images/logo1.jpg" alt="">
+            <p class="logo">首都师范大学</p>
             <div class="account">
-                <span>管理员</span>
-                <a class="icon icon-off" href=""></a>
+                <span>{{user.name}}</span>
+                <span class="icon icon-off" @click="logout"></span>
             </div>
         </div>
     </div>
@@ -21,10 +21,11 @@
 <main id="container" class="container">
     <div class="panel">
         <div class="option-list">
-            <span class="option" :class="{active: tabIndex == 1}" @click="changeTab(1)">基础成绩</span>
-            <span class="option" :class="{active: tabIndex == 2}" @click="changeTab(2)" v-if="2 == plan.inspection">初试成绩</span>
-            <span class="option" :class="{active: tabIndex == 3}" @click="changeTab(3)" v-if="2 == plan.exam">面试成绩</span>
-            <span class="option" :class="{active: tabIndex == 4}" @click="changeTab(4)" v-if="2 == plan.interview">综合成绩</span>
+            <span class="option" :class="{active: tabIndex == 1}" @click="changeTab(1)">基础测评</span>
+            <span class="option" :class="{active: tabIndex == 2}" @click="changeTab(2)" v-if="plan.status >= 2">初试</span>
+            <span class="option" :class="{active: tabIndex == 3}" @click="changeTab(3)" v-if="plan.status >= 3">面试</span>
+            <span class="option" :class="{active: tabIndex == 4}" @click="changeTab(4)" v-if="plan.status >= 4">综合分析</span>
+            <button class="btn-return">返回</button>
         </div>
         <div v-if="1 == tabIndex">
             <div class="form-score">
@@ -43,146 +44,117 @@
                 </div>
             </div>
             <button class="btn pull-right" @click="saveCourseList" :disabled="isDisabled"
-                    style="margin-right: 210px; margin-top: 60px">{{action}}
+                    style="margin-right: 210px; margin-top: 60px" v-if="1 == plan.status">{{action}}
             </button>
         </div>
-        <div v-if="2 == tabIndex">
+        <div v-if="2 == tabIndex" v-cloak>
             <div class="form-score">
                 <div class="form-group">
-                    <label class="form-label">基础分*</label>
+                    <label class="form-label">学号*</label>
+                    <p class="form-control">{{student.code}}</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">姓名*</label>
+                    <p class="form-control">{{student.name}}</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">基础成绩*</label>
                     <p class="form-control">{{student.averageScore}}</p>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">专业课</label>
+                    <label class="form-label">专业课成绩</label>
                     <input class="form-control" type="text" v-model="student.proCourseScore" @change="changeExamScore"/>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">外语</label>
+                    <label class="form-label">外语成绩</label>
                     <input class="form-control" type="text" v-model="student.englishScore" @change="changeExamScore"/>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">附加分</label>
-                    <input class="form-control" type="text" v-model="student.additionalScore"
-                           @change="changeExamScore"/>
+                    <label class="form-label">附加分数</label>
+                    <input class="form-control" type="text" v-model="student.additionalScore" @change="changeExamScore"/>
                 </div>
                 <div class="form-group">
                     <label class="form-label">初试成绩*</label>
-                    <p class="form-control">{{examScore}}</p>
+                    <p class="form-control">{{student.examScore}}</p>
                 </div>
             </div>
-            <button class="btn pull-right" @click="saveCourseList" :disabled="isDisabled"
-                    style="margin-right: 210px; margin-top: 60px">{{action}}
+            <button class="btn pull-right" @click="saveExamScore" :disabled="isDisabled"
+                    style="margin-right: 210px; margin-top: 60px" v-if="2 == plan.status">{{action}}
             </button>
         </div>
-        <div v-if="3 == tabIndex">
+        <div v-if="3 == tabIndex" v-cloak>
             <div class="form-score">
                 <div class="form-group">
-                    <label class="form-label">客观分</label>
-                    <input class="form-control" type="text"/>
+                    <label class="form-label">学号*</label>
+                    <p class="form-control">{{student.code}}</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">姓名*</label>
+                    <p class="form-control">{{student.name}}</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">面试成绩</label>
+                    <input class="form-control" type="text" v-model="student.interviewScore"/>
                 </div>
             </div>
-            <button class="btn pull-right" @click="saveCourseList" :disabled="isDisabled"
-                    style="margin-right: 210px; margin-top: 60px">{{action}}
+            <button class="btn pull-right" @click="saveInterviewScore" :disabled="isDisabled"
+                    style="margin-right: 210px; margin-top: 60px" v-if="3 == plan.status && student.examRank <= plan.quantity * 2">{{action}}
             </button>
         </div>
-        <div v-if="4 == tabIndex">
+        <div v-if="4 == tabIndex" v-cloak>
+            <div class="form-score">
+                <div class="form-group">
+                    <label class="form-label">学号*</label>
+                    <p class="form-control">{{student.code}}</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">姓名*</label>
+                    <p class="form-control">{{student.name}}</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">总成绩</label>
+                    <p class="form-control">{{student.comprehensiveScore}}</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">总排名</label>
+                    <p class="form-control">{{student.comprehensiveRank}}</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">基础成绩</label>
+                    <p class="form-control">{{student.averageScore}}</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">专业课成绩</label>
+                    <p class="form-control">{{student.proCourseScore}}</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">英语成绩</label>
+                    <p class="form-control">{{student.englishScore}}</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">附加分数</label>
+                    <p class="form-control">{{student.additionalScore}}</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">面试成绩</label>
+                    <p class="form-control">{{student.interviewScore}}</p>
+                </div>
+            </div>
         </div>
     </div>
 </main>
+<footer class="footer">
+    <span>&copy;2018 首都师范大学</span>
+</footer>
 <div id="popoverSpace" class="popover-space" v-if="prompts.length > 0">
     <popover v-for="prompt in prompts" v-bind:key="prompt.id" v-bind:prompt="prompt"></popover>
 </div>
 <div id="mask" class="mask" v-if="loading">
     <p class="mask-prompt">数据获取中...</p>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="js/vue.min.js"></script>
+<script src="js/axios.min.js"></script>
 <script src="js/demo.js"></script>
-<script>
-    const container = new Vue({
-        el: "#container",
-        data: {
-            tabIndex: 1,
-            isDisabled: false,
-            action: "保存",
-            plan: {},
-            student: {},
-            examScore: null,
-        },
-        methods: {
-            setPlan: function (plan) {
-                this.plan = plan;
-            },
-            setStudent: function (student) {
-                this.student = student;
-            },
-            changeTab: function (index) {
-                this.tabIndex = index;
-            },
-            changeExamScore: function () {
-                this.examScore = 0;
-                if ("" !== this.student.averageScore && null !== this.student.averageScore) {
-                    this.examScore += parseInt(this.student.averageScore);
-                }
-                if ("" !== this.student.proCourseScore && null !== this.student.proCourseScore) {
-                    this.examScore += parseInt(this.student.proCourseScore);
-                }
-                if ("" !== this.student.englishScore && null !== this.student.englishScore) {
-                    this.examScore += parseInt(this.student.englishScore);
-                }
-                if ("" !== this.student.additionalScore && null !== this.student.additionalScore) {
-                    this.examScore += parseInt(this.student.additionalScore);
-                }
-            },
-            saveCourseList: function () {
-                for (let index = 0; index < this.student.courseList.length; index++) {
-                    if ("" === this.student.courseList[index].score) {
-                        popoverSpace.append("请填写成绩", false);
-                        return;
-                    }
-                }
-                this.isDisabled = true;
-                this.action = "正在保存";
-                axios.put(requestContext + "api/courses", this.student.courseList)
-                    .then(function (response) {
-                        let statusCode = response.data.statusCode;
-                        if (200 === statusCode) {
-                            popoverSpace.append("保存成功", true);
-                        } else {
-                            popoverSpace.append("保存失败", false);
-                        }
-                        container.saveCallback();
-                    })
-                    .catch(function () {
-                        popoverSpace.append("服务器访问失败", false);
-                        container.saveCallback();
-                    });
-            },
-            saveCallback: function () {
-                this.action = "保存";
-                this.isDisabled = false;
-            }
-        },
-        mounted: function () {
-            let url = window.location;
-            let id = getUrlParam(url, "student");
-            axios.get(requestContext + "api/students/" + id)
-                .then(function (response) {
-                    let statusCode = response.data.statusCode;
-                    if (200 === statusCode) {
-                        container.setPlan(response.data.data.plan);
-                        container.setStudent(response.data.data.student);
-                    } else {
-                        popoverSpace.append("数据获取失败", false);
-                    }
-                    mask.loadSuccess();
-                })
-                .catch(function () {
-                    popoverSpace.append("服务器访问失败", false);
-                    mask.loadSuccess();
-                });
-        }
-    });
-</script>
+<script src="js/student.js"></script>
 </body>
 </html>

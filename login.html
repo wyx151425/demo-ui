@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>登录 - 研究生推免系统</title>
+    <link rel="shortcut icon" href="images/logo.jpg" type="image/x-icon"/>
+    <link rel="stylesheet" href="css/demo.css"/>
+    <link rel="stylesheet" href="css/login.css"/>
+</head>
+<body>
+<main id="main" class="container">
+    <div class="head">
+        <div class="brand">
+            <p class="company">首都师范大学 - 研究生推免系统</p>
+            <p class="system">http://www.cnu.edu.cn</p>
+        </div>
+    </div>
+    <form class="form-login" action="">
+        <div class="form-group">
+            <label class="form-action">
+                <span class="icon icon-remove-sign" @click="removeUsername"></span>
+            </label>
+            <input class="form-control" type="text" placeholder="您的用户名" v-model="user.username"
+                   @keyup.enter="login"/>
+            <label class="form-label">
+                <span class="icon icon-user"></span>
+            </label>
+        </div>
+        <div class="form-group">
+            <label class="form-action">
+                <span class="icon icon-eye-open" @click="typeExchange"></span>
+            </label>
+            <input class="form-control" :type="type" placeholder="6-32位密码, 区分大小写" v-model="user.password"
+                   @keyup.enter="login"/>
+            <label class="form-label">
+                <span class="icon icon-lock"></span>
+            </label>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-login" type="button" @click="login" :disabled="isDisabled">{{action}}</button>
+        </div>
+    </form>
+</main>
+<div id="popoverSpace" class="popover-space" v-if="prompts.length > 0">
+    <popover v-for="prompt in prompts" v-bind:key="prompt.id" v-bind:prompt="prompt"></popover>
+</div>
+<script src="js/vue.min.js"></script>
+<script src="js/axios.min.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>

@@ -10,10 +10,10 @@
 <header class="header">
     <div class="header-fixed">
         <div class="container">
-            <img class="logo" src="images/logo1.jpg" alt="">
+            <p class="logo">首都师范大学</p>
             <div class="account">
-                <span>管理员</span>
-                <a class="icon icon-off" href=""></a>
+                <span>{{user.name}}</span>
+                <span class="icon icon-off" @click="logout"></span>
             </div>
         </div>
     </div>
@@ -41,8 +41,8 @@
                     <td>{{plan.year}}</td>
                     <td>{{plan.quantity}}</td>
                     <td v-if="0 == plan.status" class="error" v-cloak>已终止</td>
-                    <td v-if="1 == plan.status" class="success">进行中</td>
-                    <td v-if="2 == plan.status" class="prompt" v-cloak>已完成</td>
+                    <td v-if="plan.status > 0 && plan.status < 5" class="success">进行中</td>
+                    <td v-if="5 == plan.status" class="prompt" v-cloak>已完成</td>
                     <td v-if="0 == plan.inspection">未开始</td>
                     <td v-if="1 == plan.inspection" class="success" v-cloak>进行中</td>
                     <td v-if="2 == plan.inspection" class="prompt" v-cloak>已完成</td>
@@ -56,7 +56,8 @@
                     <td v-if="1 == plan.admission" class="success" v-cloak>进行中</td>
                     <td v-if="2 == plan.admission" class="prompt" v-cloak>已完成</td>
                     <td>
-                        <a class="btn-link" :href="'plan.html?year=' + plan.year">编辑</a>
+                        <button class="btn-link" style="margin-right: 16px" @click="planUpdateModalVisible(plan)" v-if="plan.status < 3">修改</button>
+                        <a class="btn-link" :href="'plan.html?year=' + plan.year">查看</a>
                     </td>
                 </tr>
             </tbody>
@@ -88,100 +89,37 @@
         </div>
     </div>
 </div>
+<div id="planUpdateModal" class="modal" v-if="isVisible" v-cloak>
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <span class="modal-title">修改计划</span>
+            <span class="modal-close"><span class="icon icon-remove" @click="invisible"></span></span>
+        </div>
+        <div class="modal-content form-horizontal form-horizon4">
+            <div class="form-group">
+                <label class="form-label">计划年份</label>
+                <p class="form-control">{{plan.year}}</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">推免人数</label>
+                <input class="form-control" type="text" v-model="plan.quantity"/>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel pull-right" @click="invisible" :disabled="isDisabled">取消</button>
+            <button class="btn pull-right" @click="updatePlan" :disabled="isDisabled">{{action}}</button>
+        </div>
+    </div>
+</div>
 <div id="popoverSpace" class="popover-space" v-if="prompts.length > 0">
     <popover v-for="prompt in prompts" v-bind:key="prompt.id" v-bind:prompt="prompt"></popover>
 </div>
 <div id="mask" class="mask" v-if="loading">
     <p class="mask-prompt">数据获取中...</p>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="js/vue.min.js"></script>
+<script src="js/axios.min.js"></script>
 <script src="js/demo.js"></script>
-<script>
-    const container = new Vue({
-        el: "#container",
-        data: {
-            planList: []
-        },
-        methods: {
-            setPlanList: function (planList) {
-                this.planList = planList;
-            },
-            planReleaseModalVisible: function () {
-                planReleaseModal.visible();
-            }
-        },
-        mounted: function () {
-            axios.get(requestContext + "api/plans")
-                .then(function (response) {
-                    let statusCode = response.data.statusCode;
-                    if (200 === statusCode) {
-                        container.setPlanList(response.data.data);
-                    } else {
-                        popoverSpace.append("数据获取失败", false);
-                    }
-                    mask.loadSuccess();
-                })
-                .catch(function () {
-                    popoverSpace.append("服务器访问失败", false);
-                    mask.loadSuccess();
-                });
-        }
-    });
-
-    const planReleaseModal = new Vue({
-        el: "#planReleaseModal",
-        data: {
-            isVisible: false,
-            isDisabled: false,
-            action: "发布",
-            plan: {
-                year: "",
-                quantity: "",
-            },
-        },
-        methods: {
-            visible: function () {
-                this.isVisible = true;
-            },
-            invisible: function () {
-                this.isVisible = false;
-            },
-            releasePlan: function () {
-                let regexp = /^[2][0][0-9]{2}$/;
-                if ("" === this.plan.year || 4 !== this.plan.year.length || !regexp.test(this.plan.year)) {
-                    popoverSpace.append("请填写正确的计划年份");
-                    return;
-                }
-                if ("" === this.plan.quantity) {
-                    popoverSpace.append("请填写推免人数");
-                    return;
-                }
-                this.isDisabled = true;
-                this.action = "正在发布";
-                axios.post(requestContext + "api/plans", this.plan)
-                    .then(function (response) {
-                        let statusCode = response.data.statusCode;
-                        if (200 === statusCode) {
-                            popoverSpace.append("发布成功", true);
-                            window.location.reload();
-                        } else {
-                            let message = getMessage(statusCode);
-                            popoverSpace.append(message, false);
-                        }
-                        planReleaseModal.releaseCallback();
-                    })
-                    .catch(function () {
-                        popoverSpace.append("服务器访问失败", false);
-                        planReleaseModal.releaseCallback();
-                    });
-            },
-            releaseCallback: function () {
-                this.action = "发布";
-                this.isDisabled = false;
-            }
-        }
-    });
-</script>
+<script src="js/index.js"></script>
 </body>
 </html>
